@@ -19,10 +19,12 @@ class _ToDooListPageState extends State<ToDooListPage> {
   int? deleteteTodoPos;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    todoRepository.getTodoList().then((value){
-      todos = value;
+    todoRepository.getTodoList().then((value) {
+      setState(() {
+        todos = value;
+      });
     });
   }
 
@@ -44,9 +46,14 @@ class _ToDooListPageState extends State<ToDooListPage> {
                       flex: 4,
                       child: TextField(
                         controller: todocontroller,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Adicione uma tarefa',
+                          focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Color(0xff1c99de), width: 2),
+                          ),
+                          labelStyle: TextStyle(color: Color(0xff1c99de))
                         ),
                       ),
                     ),
@@ -123,6 +130,7 @@ class _ToDooListPageState extends State<ToDooListPage> {
       deleteTodo = obj;
       deleteteTodoPos = todos.indexOf(obj);
       todos.remove(obj);
+      todoRepository.saveTodolist(todos);
     });
     ScaffoldMessenger.of(context).clearSnackBars(); // limpa o snackbars
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -144,7 +152,6 @@ class _ToDooListPageState extends State<ToDooListPage> {
   }
 
   void ShowDialogDeleteTodo() {
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -169,9 +176,10 @@ class _ToDooListPageState extends State<ToDooListPage> {
     );
   }
 
-  void deleteLista(){
+  void deleteLista() {
     setState(() {
       todos.clear();
+      todoRepository.saveTodolist(todos);
     });
   }
 }
